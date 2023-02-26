@@ -4,3 +4,5 @@ venv
 /auctions/migrations
 /auctions/__pycache__
 /commerce/__pycache__
+db.sqlite3
+env/

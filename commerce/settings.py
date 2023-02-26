@@ -26,7 +26,7 @@ SECRET_KEY = '6ps8j!crjgrxt34cqbqn7x&b3y%(fny8k8nh21+qa)%ws3fh!q'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ["127.0.0.1",".herokuapp.com"]
+ALLOWED_HOSTS = ["127.0.0.1","commerce.herokuapp.com"]
 
 
 # Application definition
@@ -85,7 +85,7 @@ DATABASES = {
     }
 }
 
-db_from_env = dj_database_url/config(conn_max_age=500)
+db_from_env = dj_database_url.config(conn_max_age=600)
 DATABASES['default'].update(db_from_env)
 
 AUTH_USER_MODEL = 'auctions.User'
@@ -130,4 +130,8 @@ STATIC_URL = '/static/'
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
+
+MEDIA_URL = "/media"
+
+MEDIA_ROOT = os.path.join(BASE_DIR,'media')
