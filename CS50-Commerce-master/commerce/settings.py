@@ -11,37 +11,49 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
-from pathlib import Path
 import dj_database_url
 
-if os.path.isfile("env.py"):
-    import env
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
+
+
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY', 'U&*Va3Z+fm6WKj5MQku;')
+# SECRET_KEY = '6ps8j!crjgrxt34cqbqn7x&b3y%(fny8k8nh21+qa)%ws3fh!q'
+
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'cg#p$g+j9tax!#a3cup@1$8obt2_+&k3q+pmu)5%asj6yjpkag')
+
+# Read secret key from a file
+# with open('/etc/secret_key.txt') as f:
+#     SECRET_KEY = f.read().strip()
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# DEBUG = True
 
-ALLOWED_HOSTS = ["commerce.herokuapp.com", "localhost"]
+DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
 
+ALLOWED_HOSTS = ['commerce1.herokuapp.com','127.0.0.1','localhost']
+
+# During development, you can instead set just the base URL
+# (you might decide to change the site a few times).
+# ALLOWED_HOSTS = ['.railway.com','127.0.0.1']
 
 # Application definition
+
+# CSRF_TRUSTED_ORIGINS = ['https://web-production-d978.up.railway.app/']
+
+# During development/for this tutorial you can instead set just the base URL
+# CSRF_TRUSTED_ORIGINS = ['https://*.railway.app']
 
 # add installed app "auctions" to list of available apps
 INSTALLED_APPS = [
     'auctions',
-    'cloudinary_storage',
-    'django.contrib.staticfiles',
-    'cloudinary',
+    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -51,6 +63,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -66,7 +79,6 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [],
         'APP_DIRS': True,
-         'DIRS': [TEMPLATES_DIR],
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -84,16 +96,11 @@ WSGI_APPLICATION = 'commerce.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-#     }
-# }
-
-DATABASE_URL = os.getenv('DATABASE_URL')
 DATABASES = {
-    'default': dj_database_url.config(),
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    }
 }
 
 AUTH_USER_MODEL = 'auctions.User'
@@ -136,15 +143,14 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-STATICFILES_STORAGE = 'cloudinary_storage.storage.StaticHashedCloudinaryStorage'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+# Update database configuration from $DATABASE_URL.
 
-MEDIA_URL = '/media/'
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+db_from_env = dj_database_url.config(conn_max_age=500)
+DATABASES['default'].update(db_from_env)
 
+# The absolute path to the directory where collectstatic will collect static files for deployment.
+STATIC_ROOT = BASE_DIR + 'staticfiles'
 
-
-# django_heroku.settings(locals())
-
-
+# Simplified static file serving.
+# https://pypi.org/project/whitenoise/
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
