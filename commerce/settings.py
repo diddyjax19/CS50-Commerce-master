@@ -10,8 +10,14 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
+from pathlib import Path
 import os
 import dj_database_url
+
+
+if os.path.isfile("env.py"):
+   import env
+
 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -26,18 +32,16 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECURITY WARNING: keep the secret key used in production secret!
 # SECRET_KEY = '6ps8j!crjgrxt34cqbqn7x&b3y%(fny8k8nh21+qa)%ws3fh!q'
 
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'cg#p$g+j9tax!#a3cup@1$8obt2_+&k3q+pmu)5%asj6yjpkag')
+# SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'ffKCg3hd4fzPDOtHTt4tOVc8MZ5jx0T9')
 
-# Read secret key from a file
-# with open('/etc/secret_key.txt') as f:
-#     SECRET_KEY = f.read().strip()
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = True
 
 DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
 
-ALLOWED_HOSTS = ['commerce1.herokuapp.com','127.0.0.1','localhost']
+ALLOWED_HOSTS = ['c50commerce12.herokuapp.com','127.0.0.1','localhost']
 
 # During development, you can instead set just the base URL
 # (you might decide to change the site a few times).
@@ -96,12 +100,27 @@ WSGI_APPLICATION = 'commerce.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#     }
+# }
+
+# DATABASES = {
+#    'default': dj_database_url.parse(os.environ.get("DATABASE_URL"))
+# }
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
+    'default': dj_database_url.config(
+        default='postgres://vrpshqze:JmgPwnf10aeW9KYgH0fyKk0FGXfB_xuH@trumpet.db.elephantsql.com/vrpshqze',
+        conn_max_age=600,
+        conn_health_checks=True,
+    )
 }
+
+
+
 
 AUTH_USER_MODEL = 'auctions.User'
 
